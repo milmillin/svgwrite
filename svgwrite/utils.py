@@ -26,6 +26,7 @@
 """
 import base64
 from pathlib import Path
+from typing import Union
 from svgwrite.data import pattern
 
 
@@ -264,3 +265,6 @@ def find_first_url(text):
         return result[0]
     else:
         return None
+
+
+FloatOrStr = Union[float, str]

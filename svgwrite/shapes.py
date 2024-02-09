@@ -6,8 +6,12 @@
 # Copyright (C) 2010, Manfred Moitzi
 # License: MIT License
 
+from optparse import Option
+from typing import Optional
 from svgwrite.base import BaseElement
 from svgwrite.mixins import Presentation, Markers, Transform
+from svgwrite.utils import FloatOrStr
+from sympy import Float
 
 
 class Line(BaseElement, Transform, Presentation, Markers):
@@ -16,7 +20,7 @@ class Line(BaseElement, Transform, Presentation, Markers):
     """
     elementname = 'line'
 
-    def __init__(self, start=(0, 0), end=(0, 0), **extra):
+    def __init__(self, start: tuple[FloatOrStr, FloatOrStr] = (0, 0), end: tuple[FloatOrStr, FloatOrStr] = (0, 0), **extra):
         """
         :param 2-tuple start: start point (**x1**, **y1**)
         :param 2-tuple end: end point (**x2**, **y2**)
@@ -39,7 +43,14 @@ class Rect(BaseElement, Transform, Presentation):
     """
     elementname = 'rect'
 
-    def __init__(self, insert=(0, 0), size=(1, 1), rx=None, ry=None, **extra):
+    def __init__(
+        self,
+        insert: tuple[FloatOrStr, FloatOrStr] = (0, 0),
+        size: tuple[FloatOrStr, FloatOrStr] = (1, 1),
+        rx: Optional[FloatOrStr] = None,
+        ry: Optional[FloatOrStr] = None, 
+        **extra
+    ):
         """
         :param 2-tuple insert: insert point (**x**, **y**), left-upper point
         :param 2-tuple size: (**width**, **height**)
@@ -66,7 +77,7 @@ class Circle(BaseElement, Transform, Presentation):
     """
     elementname = 'circle'
 
-    def __init__(self, center=(0, 0), r=1, **extra):
+    def __init__(self, center: tuple[FloatOrStr, FloatOrStr] = (0, 0), r: FloatOrStr = 1, **extra):
         """
         :param 2-tuple center: circle center point (**cx**, **cy**)
         :param length r: circle-radius **r**
@@ -86,7 +97,7 @@ class Ellipse(BaseElement, Transform, Presentation):
     """
     elementname = 'ellipse'
 
-    def __init__(self, center=(0, 0), r=(1, 1), **extra):
+    def __init__(self, center: tuple[FloatOrStr, FloatOrStr] = (0, 0), r: tuple[FloatOrStr, FloatOrStr] = (1, 1), **extra):
         """
         :param 2-tuple center: ellipse center point (**cx**, **cy**)
         :param 2-tuple r: ellipse radii (**rx**, **ry**)
@@ -108,7 +119,7 @@ class Polyline(BaseElement, Transform, Presentation, Markers):
     """
     elementname = 'polyline'
 
-    def __init__(self, points=[], **extra):
+    def __init__(self, points: list[tuple[FloatOrStr, FloatOrStr]] = [], **extra):
         """
         :param `iterable` points: `iterable` of points (points are `2-tuples`)
         :param extra: additional SVG attributes as keyword-arguments
@@ -126,7 +137,7 @@ class Polyline(BaseElement, Transform, Presentation, Markers):
         self.attribs['points'] = self.points_to_string(self.points)
         return super(Polyline, self).get_xml()
 
-    def points_to_string(self, points):
+    def points_to_string(self, points: list[tuple[FloatOrStr, FloatOrStr]]) -> str:
         """
         Convert a `list` of points `2-tuples` to a `string` ``'p1x,p1y p2x,p2y ...'``.
 

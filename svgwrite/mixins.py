@@ -12,13 +12,11 @@ from svgwrite.utils import strlist
 from svgwrite.utils import is_string
 
 class BaseElementProtocol(Protocol):
+    debug: bool
+    attribs: dict[str, Any]
+
     def __setitem__(self, key, value): ...
 
-    @property
-    def debug(self) -> bool: ...
-
-    @property
-    def attribs(self) -> dict[str, Any]: ...
 
 _horiz = {'center': 'xMid', 'left': 'xMin', 'right': 'xMax'}
 _vert  = {'middle': 'YMid', 'top': 'YMin', 'bottom':'YMax'}
