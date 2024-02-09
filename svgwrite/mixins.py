@@ -6,13 +6,24 @@
 # Copyright (C) 2010, Manfred Moitzi
 # License: MIT License
 
+from typing import Optional, Protocol, Any
+
 from svgwrite.utils import strlist
 from svgwrite.utils import is_string
+
+class BaseElementProtocol(Protocol):
+    def __setitem__(self, key, value): ...
+
+    @property
+    def debug(self) -> bool: ...
+
+    @property
+    def attribs(self) -> dict[str, Any]: ...
 
 _horiz = {'center': 'xMid', 'left': 'xMin', 'right': 'xMax'}
 _vert  = {'middle': 'YMid', 'top': 'YMin', 'bottom':'YMax'}
 
-class ViewBox(object):
+class ViewBox(BaseElementProtocol):
     """ The **ViewBox** mixin provides the ability to specify that a
     given set of graphics stretch to fit a particular container element.
 
@@ -63,7 +74,7 @@ class ViewBox(object):
             raise ValueError("Invalid scale parameter '%s'" % scale)
         self['preserveAspectRatio'] = "%s%s %s" % (_horiz[horiz],_vert[vert], scale)
 
-class Transform(object):
+class Transform(BaseElementProtocol):
     """ The **Transform** mixin operates on the **transform** attribute.
     The value of the **transform** attribute is a `<transform-list>`, which
     is defined as a list of transform definitions, which are applied in the
@@ -73,7 +84,7 @@ class Transform(object):
 
     """
     transformname = 'transform'
-    def translate(self, tx, ty=None):
+    def translate(self, tx: float, ty: Optional[float] = None, *, pre: bool = False):
         """
         Specifies a translation by **tx** and **ty**. If **ty** is not provided,
         it is assumed to be zero.
@@ -81,9 +92,9 @@ class Transform(object):
         :param number tx: user coordinate - no units allowed
         :param number ty: user coordinate - no units allowed
         """
-        self._add_transformation("translate(%s)" % strlist( [tx, ty] ))
+        self._add_transformation("translate(%s)" % strlist( [tx, ty] ), pre=pre)
 
-    def rotate(self, angle, center=None):
+    def rotate(self, angle: float, center: Optional[tuple[float, float]] = None, *, pre: bool = False):
         """
         Specifies a rotation by **angle** degrees about a given point.
         If optional parameter **center** are not supplied, the rotate is
@@ -93,9 +104,9 @@ class Transform(object):
         :param 2-tuple center: rotate-center as user coordinate - no units allowed
 
         """
-        self._add_transformation("rotate(%s)" % strlist( [angle, center] ))
+        self._add_transformation("rotate(%s)" % strlist( [angle, center] ), pre=pre)
 
-    def scale(self, sx, sy=None):
+    def scale(self, sx: float, sy: Optional[float] = None, *, pre: bool = False):
         """
         Specifies a scale operation by **sx** and **sy**. If **sy** is not
         provided, it is assumed to be equal to **sx**.
@@ -104,33 +115,35 @@ class Transform(object):
         :param number sy: scalar factor y-axis, no units allowed
 
         """
-        self._add_transformation("scale(%s)" % strlist([sx, sy]))
+        self._add_transformation("scale(%s)" % strlist([sx, sy]), pre=pre)
 
-    def skewX(self, angle):
+    def skewX(self, angle: float, *, pre: bool = False):
         """ Specifies a skew transformation along the x-axis.
 
         :param number angle: skew-angle in degrees, no units allowed
 
         """
-        self._add_transformation("skewX(%s)" % angle)
+        self._add_transformation("skewX(%s)" % angle, pre=pre)
 
-    def skewY(self, angle):
+    def skewY(self, angle: float, *, pre: bool = False):
         """ Specifies a skew transformation along the y-axis.
 
         :param number angle: skew-angle in degrees, no units allowed
 
         """
-        self._add_transformation("skewY(%s)" % angle)
+        self._add_transformation("skewY(%s)" % angle, pre=pre)
 
-    def matrix(self, a, b, c, d, e, f):
-        self._add_transformation("matrix(%s)" % strlist( [a, b, c, d, e, f] ))
+    def matrix(self, a: float, b: float, c: float, d: float, e: float, f: float, *, pre: bool = False):
+        self._add_transformation("matrix(%s)" % strlist( [a, b, c, d, e, f] ), pre=pre)
 
-    def _add_transformation(self, new_transform):
+    def _add_transformation(self, new_transform: str, pre: bool):
         old_transform = self.attribs.get(self.transformname, '')
+        if pre:
+            old_transform, new_transform = new_transform, old_transform
         self[self.transformname] = ("%s %s" % (old_transform, new_transform)).strip()
 
 
-class XLink(object):
+class XLink(BaseElementProtocol):
     """ XLink mixin """
     def set_href(self, element):
         """
@@ -166,7 +179,7 @@ class XLink(object):
         self.attribs['xlink:href'] = idstr
 
 
-class Presentation(object):
+class Presentation(BaseElementProtocol):
     """
     Helper methods to set presentation attributes.
     """
@@ -227,7 +240,7 @@ class Presentation(object):
         return self
 
 
-class MediaGroup(object):
+class MediaGroup(BaseElementProtocol):
     """
     Helper methods to set media group attributes.
 
@@ -245,7 +258,7 @@ class MediaGroup(object):
         return self
 
 
-class Markers(object):
+class Markers(BaseElementProtocol):
     """
     Helper methods to set marker attributes.
 
@@ -289,7 +302,7 @@ class Markers(object):
                 self['marker'] = get_funciri(markers)
 
 
-class Clipping(object):
+class Clipping(BaseElementProtocol):
     def clip_rect(self, top='auto', right='auto', bottom='auto', left='auto'):
         """
         Set SVG Property **clip**.
