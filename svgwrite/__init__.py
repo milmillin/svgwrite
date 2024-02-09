@@ -52,23 +52,27 @@ CYEAR = '2014-2019'
 
 from svgwrite.drawing import Drawing
 from svgwrite.utils import rgb
+from svgwrite.container import Group, SVG, Defs, Symbol, Marker, Use, Hyperlink, Script, Style
+from svgwrite.path import Path
+from svgwrite.shapes import Line, Rect, Circle, Ellipse, Polyline, Polygon
+from svgwrite.text import Text, TSpan, TRef, TextPath, TBreak, TextArea
 
 
 class Unit(object):
     """ Add units to values.
     """
-    def __init__(self, unit='cm'):
+    def __init__(self, unit: str = 'cm'):
         """ Unit constructor
 
         :param str unit: specify the unit string
         """
         self._unit = unit
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: float) -> str:
         """ add unit-string to 'other'. (e.g. 5*cm => '5cm') """
         return "%s%s" % (other, self._unit)
 
-    def __call__(self, *args):
+    def __call__(self, *args: float) -> str:
         """ Add unit-strings to all arguments.
 
         :param args: list of values
