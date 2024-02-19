@@ -11,7 +11,6 @@ from typing import Optional
 from svgwrite.base import BaseElement
 from svgwrite.mixins import Presentation, Markers, Transform
 from svgwrite.utils import FloatOrStr
-from sympy import Float
 
 
 class Line(BaseElement, Transform, Presentation, Markers):
